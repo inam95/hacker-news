@@ -170,7 +170,7 @@ export const postsRouter = new Hono<Context>()
       return c.json<SuccessResponse<{ count: number; isUpvoted: boolean }>>(
         {
           success: true,
-          message: pointsChange === 1 ? "Upvoted" : "Downvoted",
+          message: "Post updated",
           data: {
             count: points,
             isUpvoted: pointsChange === 1,
@@ -277,7 +277,7 @@ export const postsRouter = new Hono<Context>()
         .from(commentsTable)
         .where(and(eq(commentsTable.postId, id), isNull(commentsTable.parentCommentId)));
 
-      const commentsQuery = await db.query.comments.findMany({
+      const comments = await db.query.comments.findMany({
         where: and(eq(commentsTable.postId, id), isNull(commentsTable.parentCommentId)),
         orderBy: sortOrder,
         limit,
@@ -326,7 +326,7 @@ export const postsRouter = new Hono<Context>()
 
       return c.json<PaginatedResponse<Comment>>(
         {
-          data: commentsQuery as Comment[],
+          data: comments as Comment[],
           success: true,
           message: "Comments fetched",
           pagination: {
