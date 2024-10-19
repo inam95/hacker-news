@@ -46,7 +46,7 @@ app.onError((error, c) => {
       c.json<ErrorResponse>(
         {
           success: false,
-          message: error.message,
+          error: error.message,
           isFormError:
             error.cause && typeof error.cause === "object" && "form" in error.cause
               ? error.cause.form === true
@@ -60,7 +60,7 @@ app.onError((error, c) => {
   return c.json<ErrorResponse>(
     {
       success: false,
-      message:
+      error:
         process.env.NODE_ENV === "production"
           ? "Internal Server Error"
           : (error.stack ?? error.message),

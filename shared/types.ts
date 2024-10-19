@@ -1,6 +1,10 @@
-import { insertCommentSchema } from "@/db/schema/comments";
-import { insertPostSchema } from "@/db/schema/posts";
 import { z } from "zod";
+
+import { insertCommentSchema } from "../server/db/schema/comments";
+import { insertPostSchema } from "../server/db/schema/posts";
+import type { ApiRoutes } from "../server/index";
+
+export { type ApiRoutes };
 
 export type SuccessResponse<T = void> = {
   success: true;
@@ -9,7 +13,7 @@ export type SuccessResponse<T = void> = {
 
 export type ErrorResponse = {
   success: false;
-  message: string;
+  error: string;
   isFormError?: boolean;
 };
 
