@@ -150,9 +150,9 @@ export const commentsRouter = new Hono<Context>()
         }
 
         if (existingUpvote) {
-          tx.delete(commentUpvotesTable).where(eq(commentUpvotesTable.id, existingUpvote.id));
+          await tx.delete(commentUpvotesTable).where(eq(commentUpvotesTable.id, existingUpvote.id));
         } else {
-          tx.insert(commentUpvotesTable).values({
+          await tx.insert(commentUpvotesTable).values({
             commentId: id,
             userId: user.id,
           });
@@ -180,12 +180,12 @@ export const commentsRouter = new Hono<Context>()
     zValidator("query", paginationSchema),
     async (c) => {
       const { id } = c.req.valid("param");
-      const { limit, page, sortBy, orderBy } = c.req.valid("query");
+      const { limit, page, sortBy, order } = c.req.valid("query");
       const user = c.get("user")!;
 
       const offset = (page - 1) * limit;
       const sortByColumn = sortBy === "points" ? commentsTable.points : commentsTable.createdAt;
-      const sortOrder = orderBy === "desc" ? desc(sortByColumn) : asc(sortByColumn);
+      const sortOrder = order === "desc" ? desc(sortByColumn) : asc(sortByColumn);
 
       const [count] = await db
         .select({ count: countDistinct(commentsTable.id) })

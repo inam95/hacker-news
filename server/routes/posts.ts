@@ -52,12 +52,12 @@ export const postsRouter = new Hono<Context>()
     );
   })
   .get("/", zValidator("query", paginationSchema), async (c) => {
-    const { limit, orderBy, page, sortBy, author, site } = c.req.valid("query");
+    const { limit, order, page, sortBy, author, site } = c.req.valid("query");
     const user = c.get("user");
 
     const offset = (page - 1) * limit;
     const sortByColumn = sortBy === "points" ? postsTable.points : postsTable.createdAt;
-    const sortOrder = orderBy === "desc" ? desc(sortByColumn) : asc(sortByColumn);
+    const sortOrder = order === "desc" ? desc(sortByColumn) : asc(sortByColumn);
 
     const [count] = await db
       .select({ count: countDistinct(postsTable.id) })
@@ -131,7 +131,7 @@ export const postsRouter = new Hono<Context>()
       let pointsChange: -1 | 1 = 1;
 
       const points = await db.transaction(async (tx) => {
-        const [existingUpvote] = await db
+        const [existingUpvote] = await tx
           .select()
           .from(postUpvotesTable)
           .where(and(eq(postUpvotesTable.postId, id), eq(postUpvotesTable.userId, user.id)))
@@ -156,9 +156,9 @@ export const postsRouter = new Hono<Context>()
         }
 
         if (existingUpvote) {
-          tx.delete(postUpvotesTable).where(eq(postUpvotesTable.id, existingUpvote.id));
+          await tx.delete(postUpvotesTable).where(eq(postUpvotesTable.id, existingUpvote.id));
         } else {
-          tx.insert(postUpvotesTable).values({
+          await tx.insert(postUpvotesTable).values({
             postId: id,
             userId: user.id,
           });
@@ -253,7 +253,7 @@ export const postsRouter = new Hono<Context>()
     ),
     async (c) => {
       const { id } = c.req.valid("param");
-      const { limit, orderBy, page, sortBy, includeChildren } = c.req.valid("query");
+      const { limit, order: orderBy, page, sortBy, includeChildren } = c.req.valid("query");
       const user = c.get("user");
 
       const [postExists] = await db
