@@ -33,7 +33,7 @@ export function SideHeader() {
             <Link to="/" onClick={() => setIsOpen(false)} className="hover:underline">
               top
             </Link>
-            <Link to="/" onClick={() => setIsOpen(false)} className="hover:underline">
+            <Link to="/submit" onClick={() => setIsOpen(false)} className="hover:underline">
               submit
             </Link>
           </nav>
@@ -80,7 +80,7 @@ export function SideHeader() {
               <Link to="/" onClick={() => setIsOpen(false)} className="hover:underline">
                 top
               </Link>
-              <Link to="/" onClick={() => setIsOpen(false)} className="hover:underline">
+              <Link to="/submit" onClick={() => setIsOpen(false)} className="hover:underline">
                 submit
               </Link>
               {user ? (
