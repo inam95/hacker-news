@@ -1,4 +1,5 @@
 import { hc, InferResponseType } from "hono/client";
+import { notFound } from "@tanstack/react-router";
 import { queryOptions } from "@tanstack/react-query";
 
 import type { ApiRoutes, ErrorResponse, Order, SortBy, SuccessResponse } from "@/shared/types";
@@ -143,4 +144,22 @@ export const postSubmit = async (title: string, url: string, content: string) =>
       isFormError: false,
     } as ErrorResponse;
   }
+};
+
+export const getPost = async (id: number) => {
+  const res = await client.posts[":id"].$get({
+    param: {
+      id: id.toString(),
+    },
+  });
+
+  if (res.ok) {
+    const data = await res.json();
+    return data;
+  }
+  if (res.status === 404) {
+    throw notFound();
+  }
+  const data = (await res.json()) as unknown as ErrorResponse;
+  throw new Error(data.error);
 };
